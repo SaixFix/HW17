@@ -63,13 +63,20 @@ class MovieView(Resource):
         movie = Movie.query.filter(Movie.id == id).one()
         req_json = request.json
 
-        movie.title = req_json.get("title")
-        movie.description = req_json.get("description")
-        movie.trailer = req_json.get("trailer")
-        movie.year = req_json.get("year")
-        movie.rating = req_json.get("rating")
-        movie.genre_id = req_json.get("genre_id")
-        movie.director_id = req_json.get("director_id")
+        if "title" in req_json:
+            movie.title = req_json.get("title")
+        if "description" in req_json:
+            movie.description = req_json.get("description")
+        if "trailer" in req_json:
+            movie.trailer = req_json.get("trailer")
+        if "year" in req_json:
+            movie.year = req_json.get("year")
+        if "rating" in req_json:
+            movie.rating = req_json.get("rating")
+        if "genre_id" in req_json:
+            movie.genre_id = req_json.get("genre_id")
+        if "director_id" in req_json:
+            movie.director_id = req_json.get("director_id")
 
         db.session.add(movie)
         db.session.commit()

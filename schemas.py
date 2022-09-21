@@ -20,7 +20,7 @@ class MovieSchema(Schema):
     trailer = fields.Str()
     year = fields.Int()
     rating = fields.Float()
-    genre = fields.Nested(GenreSchema, only=["name"])
-    director = fields.Nested(DirectorSchema, only=["name"])
+    genre = fields.Pluck("GenreSchema", "name")
+    director = fields.Pluck("DirectorSchema", "name")
 
 
