@@ -32,7 +32,7 @@ class MoviesViews(Resource):
         return movies_schema.dump(all_movies), 200
 
     def post(self):
-        """Добовляем фильм"""
+        """Добавляем фильм"""
         req_json = request.json
         new_movie = Movie(**req_json)
         with db.session.begin():
@@ -52,30 +52,38 @@ class MovieView(Resource):
 
     def put(self, id: int):
         """Обновляет фильм"""
-        try:
-            movie = Movie.query.filter(Movie.id == id).one()
-            req_json = request.json
+        movie = Movie.query.filter(Movie.id == id).one()
+        req_json = request.json
 
-            movie.title = req_json.get("title")
-            movie.description = req_json.get("description")
-            movie.trailer = req_json.get("trailer")
-            movie.year = req_json.get("year")
-            movie.rating = req_json.get("rating")
-            movie.genre_id = req_json.get("genre_id")
-            movie.director_id = req_json.get("director_id")
+        movie.title = req_json.get("title")
+        movie.description = req_json.get("description")
+        movie.trailer = req_json.get("trailer")
+        movie.year = req_json.get("year")
+        movie.rating = req_json.get("rating")
+        movie.genre_id = req_json.get("genre_id")
+        movie.director_id = req_json.get("director_id")
 
-            db.session.add(movie)
-            db.session.commit()
-        except Exception as error:
-            return str(error), 404
+        db.session.add(movie)
+        db.session.commit()
+        return "", 204
+
 
     def delete(self, id: int):
         """Удаляем фильм"""
         movie = Movie.query.filter(Movie.id == id).one()
         db.session.delete(movie)
         db.session.commit()
-        return "", 404
+        return "", 204
 
+
+@director_ns.route("/<name>")
+class DirectorViews(Resource):
+    def post(self, name):
+        """Добавляем режиссера"""
+        new_director = Director(name=name)
+        with db.session.begin():
+            db.session.add(new_director)
+        return '', 201
 
 
 
@@ -88,25 +96,34 @@ class DirectorsViews(Resource):
             return movies_schema.dump(movies_by_director), 200
         except Exception:
             return "", 404
+
     def put(self, id: int):
         """Обновляет режжисера"""
-        try:
-            director = Director.query.filter(Director.id == id).one()
-            req_json = request.json
+        director = Director.query.filter(Director.id == id).one()
+        req_json = request.json
 
-            director.name = req_json.get("name")
+        director.name = req_json.get("name")
 
-            db.session.add(director)
-            db.session.commit()
-        except Exception as error:
-            return str(error), 404
+        db.session.add(director)
+        db.session.commit()
+        return "", 204
 
     def delete(self, id: int):
         """Удаляем режжисера"""
         director = Director.query.filter(Director.id == id).one()
         db.session.delete(director)
         db.session.commit()
-        return "", 404
+        return "", 204
+
+
+@genre_ns.route("/<name>")
+class GenreViews(Resource):
+    def post(self, name):
+        """Добавляем жанр"""
+        new_genre = Genre(name=name)
+        with db.session.begin():
+            db.session.add(new_genre)
+        return '', 201
 
 
 @movie_ns.route("/genres/<int:uid>")
@@ -128,6 +145,7 @@ class GenresViews(Resource):
 
             db.session.add(genre)
             db.session.commit()
+            return
         except Exception as error:
             return str(error), 404
 
@@ -136,7 +154,7 @@ class GenresViews(Resource):
         genre = Genre.query.filter(Genre.id == id).one()
         db.session.delete(genre)
         db.session.commit()
-        return "", 404
+        return "", 204
 
 
 if __name__ == '__main__':
