@@ -28,6 +28,13 @@ genre_ns = api.namespace('genre')
 class MoviesViews(Resource):
     def get(self):
         """Возвращает список всех фильмов"""
+        req_genre_id = request.args.get("genre_id")
+        req_director_id = request.args.get("director_id")
+        if req_genre_id and req_director_id:
+            movies = Movie.query.filter(Movie.genre_id == req_genre_id,
+                                           Movie.director_id == req_director_id).all()
+            return movies_schema.dump(movies), 200
+
         all_movies = Movie.query.all()
         return movies_schema.dump(all_movies), 200
 
@@ -38,6 +45,7 @@ class MoviesViews(Resource):
         with db.session.begin():
             db.session.add(new_movie)
         return "", 201
+
 
 
 @movie_ns.route("/<int:id>")
